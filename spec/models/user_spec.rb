@@ -37,6 +37,22 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe 'username reservations' do
+    it 'does not allow reserved usernames' do
+      reserved = RESERVED_USERNAMES.first # 例: "admin"
+      user = User.new(username: reserved, webhook_url: 'https://example.com/webhook')
+      expect(user).not_to be_valid
+      expect(user.errors[:username]).to include("is reserved and cannot be used")
+    end
+
+    it 'treats reserved usernames case-insensitively' do
+      reserved = RESERVED_USERNAMES.first.upcase # 例: "ADMIN"
+      user = User.new(username: reserved, webhook_url: 'https://example.com/webhook')
+      expect(user).not_to be_valid
+      expect(user.errors[:username]).to include("is reserved and cannot be used")
+    end
+  end
+
   describe '#authenticate_token' do
     it '正しい token で認証できる' do
       user = User.create(

@@ -29,6 +29,8 @@ class User < ApplicationRecord
 
   validate :webhook_url_must_be_valid
 
+  validate :username_must_not_be_reserved
+
   # トークン照合（認証用）
   def authenticate_token(token)
     Password.new(token_digest).is_password?(token)
@@ -53,6 +55,12 @@ class User < ApplicationRecord
       end
     rescue URI::InvalidURIError
       errors.add(:webhook_url, "must be a valid URL")
+    end
+  end
+
+  def username_must_not_be_reserved
+    if RESERVED_USERNAMES.include?(username.downcase)
+      errors.add(:username, "is reserved and cannot be used")
     end
   end
 end
