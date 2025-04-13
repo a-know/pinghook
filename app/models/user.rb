@@ -7,6 +7,9 @@ class User < ApplicationRecord
   # トークンの元値（登録時に一度だけ生成・返す）
   attr_reader :raw_token
 
+  has_many :blocks, foreign_key: :blocker_id, dependent: :destroy
+  has_many :blocked_users, through: :blocks, source: :blocked
+
   # 登録前の準備
   before_validation :assign_uuid, on: :create
   before_validation :generate_token_digest, on: :create
