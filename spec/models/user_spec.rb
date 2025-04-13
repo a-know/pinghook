@@ -93,4 +93,30 @@ RSpec.describe User, type: :model do
       expect(user.errors[:webhook_url]).to include("can't be blank", "must start with http:// or https://")
     end
   end
+
+  describe 'blocking relationships' do
+    let(:alice) { User.create!(username: 'alice', webhook_url: 'https://example.com/a') }
+    let(:bob)   { User.create!(username: 'bob', webhook_url: 'https://example.com/b') }
+
+    it 'can block another user' do
+      alice.blocked_users << bob
+
+      # ブロック対象としてbobが含まれていること
+      expect(alice.blocked_users).to include(bob)
+
+      # blocks中間テーブルにBlockレコードができていること
+      expect(alice.blocks.first.blocked).to eq(bob)
+    end
+
+    it 'does not block users by default' do
+      expect(alice.blocked_users).to be_empty
+    end
+
+    it 'prevents duplicate blocks' do
+      alice.blocked_users << bob
+      expect {
+        alice.blocked_users << bob
+      }.to raise_error(ActiveRecord::RecordInvalid)
+    end
+  end
 end
