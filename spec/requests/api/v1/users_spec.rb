@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'net/http'
 
 RSpec.describe "Users API", type: :request do
   describe 'POST /api/v1/users' do
@@ -41,6 +42,10 @@ RSpec.describe "Users API", type: :request do
     end
 
     it '正しいトークンで削除できる（204）' do
+      allow(Net::HTTP).to receive(:post).and_return(
+        instance_double("Net::HTTPOK", is_a?: true) # 成功ステータスっぽいモック
+      )
+
       delete "/api/v1/users/@#{username}",
         headers: { 'Authorization' => "Token #{@token}" }
 
