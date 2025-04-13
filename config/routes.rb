@@ -10,11 +10,12 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :users, only: [:create] do
-        delete '@:username', action: :destroy, on: :collection
-        post '@:username/blocks', to: 'blocks#create', on: :collection
-        post '/messages', to: 'messages#create'
-      end
+      post '/users', to: 'users#create'
+      delete '/users/@:username', to: 'users#destroy'
+
+      post '/users/@:username/blocks', to: 'blocks#create'
+
+      post '/messages', to: 'messages#create'
     end
   end
 end
