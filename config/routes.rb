@@ -13,6 +13,7 @@ Rails.application.routes.draw do
       resources :users, only: [:create] do
         delete '@:username', action: :destroy, on: :collection
         post '@:username/blocks', to: 'blocks#create', on: :collection
+        post '/messages', to: 'messages#create'
       end
     end
   end
