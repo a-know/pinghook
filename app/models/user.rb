@@ -8,7 +8,8 @@ class User < ApplicationRecord
   attr_reader :raw_token
 
   # 登録前の準備
-  before_create :assign_uuid, :generate_token_digest
+  before_validation :assign_uuid, on: :create
+  before_validation :generate_token_digest, on: :create
 
   # バリデーション
   validates :username,
