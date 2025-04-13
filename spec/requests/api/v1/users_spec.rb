@@ -29,4 +29,39 @@ RSpec.describe "Users API", type: :request do
       expect(json['errors']).to include(/Username/)
     end
   end
+
+  describe 'DELETE /api/v1/users/@:username' do
+    let(:username) { 'delete-me' }
+    let(:webhook_url) { 'https://hooks.slack.com/services/test/delete' }
+
+    before do
+      @user = User.new(username: username, webhook_url: webhook_url)
+      @user.save! # token_digestが生成される
+      @token = @user.raw_token
+    end
+
+    it '正しいトークンで削除できる（204）' do
+      delete "/api/v1/users/@#{username}",
+        headers: { 'Authorization' => "Token #{@token}" }
+
+      expect(response).to have_http_status(:no_content)
+      expect(User.find_by(username: username)).to be_nil
+      expect(DeletedUser.find_by(username: username)).not_to be_nil
+    end
+
+    it '存在しないユーザーを削除しようとすると404' do
+      delete "/api/v1/users/@nonexistent",
+        headers: { 'Authorization' => "Token #{@token}" }
+
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it 'トークンが間違っていると404' do
+      delete "/api/v1/users/@#{username}",
+        headers: { 'Authorization' => "Token wrongtoken" }
+
+      expect(response).to have_http_status(:not_found)
+      expect(User.find_by(username: username)).not_to be_nil
+    end
+  end
 end
