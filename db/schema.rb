@@ -12,8 +12,8 @@
 
 ActiveRecord::Schema[7.1].define(version: 2025_04_13_123318) do
   create_table "blocks", force: :cascade do |t|
-    t.integer "blocker_id", null: false
-    t.integer "blocked_id", null: false
+    t.string "blocker_id", null: false
+    t.string "blocked_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["blocked_id"], name: "index_blocks_on_blocked_id"
