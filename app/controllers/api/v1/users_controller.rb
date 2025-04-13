@@ -49,10 +49,6 @@ module Api
         params.permit(:username, :webhook_url)
       end
 
-      def token_from_header
-        request.authorization&.split("Token ")&.last
-      end
-
       def send_deletion_notice(user)
         uri = URI.parse(user.webhook_url)
         payload = { text: "[pinghook] User @#{user.username} has been deleted." }.to_json

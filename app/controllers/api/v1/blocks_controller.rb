@@ -17,12 +17,6 @@ module Api
       rescue ActiveRecord::RecordInvalid
         head :unprocessable_entity
       end
-
-      private
-
-      def token_from_header
-        request.authorization&.split('Token ')&.last
-      end
     end
   end
 end
