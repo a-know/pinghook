@@ -24,7 +24,7 @@ reserved_usernames:
   - security
   - public
   - private
-  - null
+  - "null"
   - undefined
   - me
   - you
