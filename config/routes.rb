@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :users, only: [:create] do
         delete '@:username', action: :destroy, on: :collection
+        post '@:username/blocks', to: 'blocks#create', on: :collection
       end
     end
   end
