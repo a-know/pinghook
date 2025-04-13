@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_04_13_123318) do
+ActiveRecord::Schema[7.1].define(version: 2025_04_13_125947) do
   create_table "blocks", force: :cascade do |t|
     t.string "blocker_id", null: false
     t.string "blocked_id", null: false
@@ -35,6 +35,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_13_123318) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "token_digest", null: false
+    t.datetime "last_sent_at"
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
