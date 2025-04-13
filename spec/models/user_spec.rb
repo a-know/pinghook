@@ -56,5 +56,41 @@ RSpec.describe User, type: :model do
 
       expect(user.authenticate_token('wrong_token')).to eq false
     end
+
+    it '無効なURL形式のwebhook_urlはエラーになる（ただの文字列）' do
+      user = User.new(
+        username: 'url-fail1',
+        webhook_url: 'あいうえお'
+      )
+      expect(user).not_to be_valid
+      expect(user.errors[:webhook_url]).to include("must be a valid URL")
+    end
+
+    it 'http/https以外のスキーム（ftpなど）はエラーになる' do
+      user = User.new(
+        username: 'url-fail2',
+        webhook_url: 'ftp://example.com'
+      )
+      expect(user).not_to be_valid
+      expect(user.errors[:webhook_url]).to include("must start with http:// or https://")
+    end
+
+    it 'スキームがないURLはエラーになる' do
+      user = User.new(
+        username: 'url-fail3',
+        webhook_url: 'www.example.com'
+      )
+      expect(user).not_to be_valid
+      expect(user.errors[:webhook_url]).to include("must start with http:// or https://")
+    end
+
+    it '空文字のwebhook_urlはエラーになる' do
+      user = User.new(
+        username: 'url-fail4',
+        webhook_url: ''
+      )
+      expect(user).not_to be_valid
+      expect(user.errors[:webhook_url]).to include("can't be blank", "must start with http:// or https://")
+    end
   end
 end
