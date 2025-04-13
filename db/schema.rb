@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_04_13_093708) do
+ActiveRecord::Schema[7.1].define(version: 2025_04_13_123318) do
+  create_table "blocks", force: :cascade do |t|
+    t.integer "blocker_id", null: false
+    t.integer "blocked_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["blocked_id"], name: "index_blocks_on_blocked_id"
+    t.index ["blocker_id", "blocked_id"], name: "index_blocks_on_blocker_id_and_blocked_id", unique: true
+    t.index ["blocker_id"], name: "index_blocks_on_blocker_id"
+  end
+
   create_table "deleted_users", id: :string, force: :cascade do |t|
     t.string "username", null: false
     t.datetime "deleted_at", null: false
@@ -28,4 +38,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_13_093708) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "blocks", "users", column: "blocked_id"
+  add_foreign_key "blocks", "users", column: "blocker_id"
 end
