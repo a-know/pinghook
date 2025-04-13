@@ -68,5 +68,23 @@ RSpec.describe "Users API", type: :request do
       expect(response).to have_http_status(:not_found)
       expect(User.find_by(username: username)).not_to be_nil
     end
+
+    it 'webhook送信に失敗したときに3回リトライされる' do
+      # `Net::HTTP.post` を常に例外を吐くようにモック
+      allow(Net::HTTP).to receive(:post).and_raise(StandardError.new("simulated failure"))
+      allow_any_instance_of(Object).to receive(:sleep) # テスト時間を短縮するため、sleepを無効化
+
+      expect(Rails.logger).to receive(:warn).with(
+        a_string_including("Failed to send deletion webhook for #{username}")
+      )
+
+      delete "/api/v1/users/@#{username}",
+        headers: { 'Authorization' => "Token #{@token}" }
+
+      expect(response).to have_http_status(:no_content)
+
+      # 🔍 ここで3回リトライされたことを検証
+      expect(Net::HTTP).to have_received(:post).exactly(3).times
+    end
   end
 end
