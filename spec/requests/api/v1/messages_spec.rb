@@ -137,6 +137,34 @@ RSpec.describe 'Messages API', type: :request do
     end
   end
 
+  describe 'parameter validations' do
+    let(:headers) { { 'Authorization' => "Token #{sender.raw_token}" } }
+
+    it 'returns 400 if from is missing' do
+      post '/api/v1/messages',
+        params: { to: recipient.username, message: 'yo' },
+        headers: headers
+
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it 'returns 400 if to is missing' do
+      post '/api/v1/messages',
+        params: { from: sender.username, message: 'yo' },
+        headers: headers
+
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it 'returns 400 if message is missing' do
+      post '/api/v1/messages',
+        params: { from: sender.username, to: recipient.username },
+        headers: headers
+
+      expect(response).to have_http_status(:bad_request)
+    end
+  end
+
   def json_matching_key(expected_key)
     satisfy do |json_str|
       json = JSON.parse(json_str)

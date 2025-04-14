@@ -4,6 +4,10 @@ module Api
   module V1
     class MessagesController < ApplicationController
       def create
+        unless params[:from].present? && params[:to].present? && params[:message].present?
+          return head :bad_request
+        end
+
         sender = User.find_by(username: params[:from])
         return head :not_found unless sender&.authenticate_token(token_from_header)
 
@@ -92,14 +96,14 @@ module Api
 
       def build_message_body(sender, recipient, message)
         reply_command = <<~CURL.strip
-          curl -X POST https://pinghook.sh/api/v1/messages \\
+          curl -X POST https://pinghook.onrender.com/api/v1/messages \\
             -H "Content-Type: application/json" \\
             -H "Authorization: Token {your_token}" \\
-            -d '{"to": "#{sender.username}", "message": "your reply"}'
+            -d '{"from": "#{recipient.username}", "to": "#{sender.username}", "message": "your reply"}'
         CURL
 
         block_command = <<~CURL.strip
-          curl -X POST https://pinghook.sh/api/v1/users/@#{recipient.username}/blocks \\
+          curl -X POST https://pinghook.onrender.com/api/v1/users/@#{recipient.username}/blocks \\
             -H "Content-Type: application/json" \\
             -H "Authorization: Token {your_token}" \\
             -d '{"block": "#{sender.username}"}'
