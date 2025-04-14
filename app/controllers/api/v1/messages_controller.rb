@@ -1,3 +1,5 @@
+require 'net/http'
+
 module Api
   module V1
     class MessagesController < ApplicationController
@@ -91,12 +93,14 @@ module Api
       def build_message_body(sender, recipient, message)
         reply_command = <<~CURL.strip
           curl -X POST https://pinghook.sh/api/v1/messages \\
+            -H "Content-Type: application/json" \\
             -H "Authorization: Token {your_token}" \\
             -d '{"to": "#{sender.username}", "message": "your reply"}'
         CURL
 
         block_command = <<~CURL.strip
           curl -X POST https://pinghook.sh/api/v1/users/@#{recipient.username}/blocks \\
+            -H "Content-Type: application/json" \\
             -H "Authorization: Token {your_token}" \\
             -d '{"block": "#{sender.username}"}'
         CURL
