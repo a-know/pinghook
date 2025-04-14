@@ -45,7 +45,11 @@ module Api
           headers
         )
 
-        head :no_content
+        render json: {
+          status: "sent",
+          to: recipient.username,
+          message_preview: params[:message].truncate(100)
+        }, status: :created
       rescue URI::InvalidURIError, JSON::ParserError
         head :bad_request
       rescue => e

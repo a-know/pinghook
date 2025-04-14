@@ -19,7 +19,12 @@ RSpec.describe 'Messages API', type: :request do
         params: { from: sender.username, to: recipient.username, message: 'hello' },
         headers: headers
 
-      expect(response).to have_http_status(:no_content)
+      expect(response).to have_http_status(:created)
+
+      json = JSON.parse(response.body)
+      expect(json['status']).to eq('sent')
+      expect(json['to']).to eq(recipient.username)
+      expect(json['message_preview']).to eq('hello')
 
       expect(Net::HTTP).to have_received(:post).with(
         URI(recipient.webhook_url),
