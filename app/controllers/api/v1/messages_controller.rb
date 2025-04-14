@@ -31,7 +31,12 @@ module Api
 
         # 宛先への送信は、ブロックされている場合はスキップ
         if recipient.blocked_users.include?(sender)
-          return head :no_content
+          render json: {
+            status: "blocked",
+            to: recipient.username,
+            message_preview: params[:message].truncate(100)
+          }, status: :ok
+          return
         end
 
         # 宛先に送るメッセージ（返信/ブロックコマンドつき）
