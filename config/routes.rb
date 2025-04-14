@@ -15,8 +15,6 @@ Rails.application.routes.draw do
 
       post '/users/@:username/blocks', to: 'blocks#create'
 
-      post '/messages', to: 'messages#create'
-
       post '/users/@:username/messages', to: 'user_messages#create'
     end
   end
