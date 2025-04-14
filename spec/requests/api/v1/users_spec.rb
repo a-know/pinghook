@@ -29,6 +29,14 @@ RSpec.describe "Users API", type: :request do
       json = JSON.parse(response.body)
       expect(json['errors']).to include(/Username/)
     end
+
+    it 'returns 400 if required fields are missing' do
+      post '/api/v1/users', params: { username: 'a-know' } # webhook_url欠けてる
+      expect(response).to have_http_status(:bad_request)
+
+      post '/api/v1/users', params: { webhook_url: 'https://example.com' } # username欠けてる
+      expect(response).to have_http_status(:bad_request)
+    end
   end
 
   describe 'DELETE /api/v1/users/@:username' do

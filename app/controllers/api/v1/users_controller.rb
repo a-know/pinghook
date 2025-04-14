@@ -2,6 +2,10 @@ module Api
   module V1
     class UsersController < ApplicationController
       def create
+        unless params[:username].present? && params[:webhook_url].present?
+          return head :bad_request
+        end
+
         user = User.new(user_params)
 
         if user.save
