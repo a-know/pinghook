@@ -2,17 +2,14 @@ require 'net/http'
 
 module Api
   module V1
-    class MessagesController < ApplicationController
+    class UserMessagesController < ApplicationController
       def create
-        unless params[:from].present? && params[:to].present? && params[:message].present?
-          return head :bad_request
-        end
+        return head :bad_request unless params[:from].present? && params[:message].present?
 
-        sender = User.find_by(username: params[:from])
-        return head :not_found unless sender&.authenticate_token(token_from_header)
-
-        recipient = User.find_by(username: params[:to])
-        return head :not_found unless recipient
+        recipient = User.find_by(username: params[:username])
+        sender    = User.find_by(username: params[:from])
+        return head :not_found unless recipient && sender
+        return head :not_found unless sender.authenticate_token(token_from_header)
 
         # 送信者に送るメッセージ（純粋な送信内容のみ）
         body_for_sender = "[#{sender.username}] #{params[:message]}"
@@ -105,10 +102,10 @@ module Api
 
       def build_message_body(sender, recipient, message)
         reply_command = <<~CURL.strip
-          curl -X POST https://pinghook.onrender.com/api/v1/messages \\
+          curl -X POST https://pinghook.onrender.com/api/v1/users/@#{sender.username}/messages \\
             -H "Content-Type: application/json" \\
             -H "Authorization: Token {your_token}" \\
-            -d '{"from": "#{recipient.username}", "to": "#{sender.username}", "message": "your reply"}'
+            -d '{"from": "#{recipient.username}", "message": "your reply"}'
         CURL
 
         block_command = <<~CURL.strip
