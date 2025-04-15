@@ -40,6 +40,22 @@ RSpec.describe "UserMessages API", type: :request do
       )
     end
 
+    it "returns 400 Bad Request when sending message to self" do
+      post "/api/v1/users/@#{sender.username}/messages",
+        headers: {
+          "Authorization" => "Token #{token}"
+        },
+        params: {
+          from: sender.username,
+          message: "hello myself"
+        }
+
+      expect(response).to have_http_status(:bad_request)
+
+      json = JSON.parse(response.body)
+      expect(json["error"]).to eq("You cannot send a message to yourself.")
+    end
+
     it 'returns 404 if recipient does not exist' do
       post "/api/v1/users/@ghost/messages",
         params: { from: sender.username, message: 'hi' },

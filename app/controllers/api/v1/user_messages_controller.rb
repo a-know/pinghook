@@ -11,6 +11,12 @@ module Api
         return head :not_found unless recipient && sender
         return head :not_found unless sender.authenticate_token(token_from_header)
 
+        if sender.username == recipient.username
+          return render json: {
+            error: "You cannot send a message to yourself."
+          }, status: :bad_request
+        end
+
         # 送信者に送るメッセージ（純粋な送信内容のみ）
         body_for_sender = "[#{sender.username}] #{params[:message]}"
         payload_to_sender = format_payload(body_for_sender, sender.webhook_url)
