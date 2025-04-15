@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PingHook</title>
+  <style>
+    body {
+      background-color: black;
+      color: #00FF00;
+      font-family: monospace;
+      padding: 2rem;
+    }
+    h1, h2 {
+      color: #00FF00;
+    }
+    code, pre {
+      background-color: #111;
+      padding: 1rem;
+      display: block;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border-left: 5px solid #00FF00;
+      margin-bottom: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <h1># PingHook</h1>
+  <p>Webhook Proxy as a Service — your messages are never stored, only proxied.</p>
+
+  <h2>## How to use PingHook</h2>
+
+  <ol>
+    <li>Generate your Incoming Webhook URL from your Discord or Slack workspace.</li>
+    <li>Register your PingHook user:</li>
+  </ol>
+
+  <code>curl -X POST https://pinghook.onrender.com/api/v1/users \
+  -H "Content-Type: application/json" \
+  -d '{"username":"your-name","webhook_url":"https://discord.com/api/webhooks/xxx"}'
+  </code>
+
+  <ol start="3">
+    <li>Send a message to another PingHook user:</li>
+  </ol>
+
+  <code>curl -X POST https://pinghook.onrender.com/api/v1/users/@{recipient-name}/messages \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Token {your-token}" \
+  -d '{"from": "{your-name}", "message": "Yo"}'
+
+{ "status": "sent", "to": "{recipient-name}", "message_preview": "Yo" }
+  </code>
+
+  <ol start="4">
+    <li>Enjoy!  </li>
+  </ol>
+
+  <h2>## PingHook API Descriptions</h2>
+
+  <h3>### POST /api/v1/users</h3>
+
+  <code>Create a new user
+Request body:
+{
+  "username": "your-name",
+  "webhook_url": "https://hooks.slack.com/..."
+}
+Response:
+{
+  "username": "your-name",
+  "token": "tk_abc123...",
+  "webhook_url": "..."
+}</code>
+
+<h3>### DELETE /api/v1/users/@:username</h3>
+
+  <code>Delete (deactivate) the specified user
+Headers:
+Authorization: Token {your-token}
+Response: 204 No Content or notification JSON via webhook</code>
+
+<h3>### POST /api/v1/users/@:username/messages</h3>
+
+  <code>Send a message to the specified user
+Headers:
+Authorization: Token {your-token}
+Request body:
+{
+  "from": "sender-username",
+  "message": "your message"
+}
+Response:
+{
+  "status": "sent",
+  "to": "recipient-name",
+  "message_preview": "your message"
+}</code>
+
+<h3>### POST /api/v1/users/@:username/blocks</h3>
+
+  <code>Block a specific user
+Headers:
+Authorization: Token {your-token}
+Request body:
+{
+  "block": "username-to-block"
+}
+Response:
+{
+  "status": "blocked",
+  "user": "username-to-block"
+}</code>
+
+<footer>
+    <p>&copy; 2025 a-know</p> <p><a href="https://github.com/a-know/pinghook" target="_blank">View on GitHub</a></p>
+</footer>
+
+</body>
+</html>
