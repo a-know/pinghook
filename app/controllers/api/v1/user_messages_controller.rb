@@ -104,14 +104,14 @@ module Api
         reply_command = <<~CURL.strip
           curl -X POST https://pinghook.onrender.com/api/v1/users/@#{sender.username}/messages \\
             -H "Content-Type: application/json" \\
-            -H "Authorization: Token {your_token}" \\
+            -H "Authorization: Token $PINGHOOK_USER_TOKEN" \\
             -d '{"from": "#{recipient.username}", "message": "your reply"}'
         CURL
 
         block_command = <<~CURL.strip
           curl -X POST https://pinghook.onrender.com/api/v1/users/@#{recipient.username}/blocks \\
             -H "Content-Type: application/json" \\
-            -H "Authorization: Token {your_token}" \\
+            -H "Authorization: Token $PINGHOOK_USER_TOKEN" \\
             -d '{"block": "#{sender.username}"}'
         CURL
 
