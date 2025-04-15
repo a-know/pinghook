@@ -22,6 +22,6 @@ test:
 
 production:
   adapter: sqlite3
-  database: /data/pinghook_production.sqlite3
+  database: /sqlite/production.sqlite3
   pool: 5
   timeout: 5000
