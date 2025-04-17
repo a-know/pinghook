@@ -2,7 +2,7 @@ require 'rails_helper'
 require 'net/http'
 
 RSpec.describe "Users API", type: :request do
-  describe 'POST /api/v1/users' do
+  describe 'POST /users' do
     let(:valid_params) do
       {
         username: 'ko-hi',
@@ -11,7 +11,7 @@ RSpec.describe "Users API", type: :request do
     end
 
     it 'ユーザーが登録できる' do
-      post '/api/v1/users', params: valid_params
+      post '/users', params: valid_params
 
       expect(response).to have_http_status(:created)
       json = JSON.parse(response.body)
@@ -23,7 +23,7 @@ RSpec.describe "Users API", type: :request do
     it 'バリデーションエラー時に 422 が返る' do
       invalid_params = valid_params.merge(username: 'ab') # 3文字未満
 
-      post '/api/v1/users', params: invalid_params
+      post '/users', params: invalid_params
 
       expect(response).to have_http_status(:unprocessable_entity)
       json = JSON.parse(response.body)
@@ -31,15 +31,15 @@ RSpec.describe "Users API", type: :request do
     end
 
     it 'returns 400 if required fields are missing' do
-      post '/api/v1/users', params: { username: 'a-know' } # webhook_url欠けてる
+      post '/users', params: { username: 'a-know' } # webhook_url欠けてる
       expect(response).to have_http_status(:bad_request)
 
-      post '/api/v1/users', params: { webhook_url: 'https://example.com' } # username欠けてる
+      post '/users', params: { webhook_url: 'https://example.com' } # username欠けてる
       expect(response).to have_http_status(:bad_request)
     end
   end
 
-  describe 'DELETE /api/v1/users/@:username' do
+  describe 'DELETE /@:username' do
     let(:username) { 'delete-me' }
     let(:webhook_url) { 'https://hooks.slack.com/services/test/delete' }
 
@@ -54,7 +54,7 @@ RSpec.describe "Users API", type: :request do
         instance_double("Net::HTTPOK", is_a?: true) # 成功ステータスっぽいモック
       )
 
-      delete "/api/v1/users/@#{username}",
+      delete "/@#{username}",
         headers: { 'Authorization' => "Token #{@token}" }
 
       expect(response).to have_http_status(:no_content)
@@ -63,14 +63,14 @@ RSpec.describe "Users API", type: :request do
     end
 
     it '存在しないユーザーを削除しようとすると404' do
-      delete "/api/v1/users/@nonexistent",
+      delete "/@nonexistent",
         headers: { 'Authorization' => "Token #{@token}" }
 
       expect(response).to have_http_status(:not_found)
     end
 
     it 'トークンが間違っていると404' do
-      delete "/api/v1/users/@#{username}",
+      delete "/@#{username}",
         headers: { 'Authorization' => "Token wrongtoken" }
 
       expect(response).to have_http_status(:not_found)
@@ -86,7 +86,7 @@ RSpec.describe "Users API", type: :request do
         a_string_including("Failed to send deletion webhook for #{username}")
       )
 
-      delete "/api/v1/users/@#{username}",
+      delete "/@#{username}",
         headers: { 'Authorization' => "Token #{@token}" }
 
       expect(response).to have_http_status(:no_content)
