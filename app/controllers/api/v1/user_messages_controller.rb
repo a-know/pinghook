@@ -3,6 +3,14 @@ require 'net/http'
 module Api
   module V1
     class UserMessagesController < ApplicationController
+
+      def create_short
+        # `params[:username]` はルーティングから取得
+        # 他は通常の `create` と同じ処理でOK
+        params[:to] = params[:username]
+        create
+      end
+
       def create
         return head :bad_request unless params[:from].present? && params[:message].present?
 
@@ -108,14 +116,14 @@ module Api
 
       def build_message_body(sender, recipient, message)
         reply_command = <<~CURL.strip
-          curl -X POST https://pinghook.onrender.com/api/v1/users/@#{sender.username}/messages \\
+          curl -X POST https://pinghook.onrender.com/@#{sender.username} \\
             -H "Content-Type: application/json" \\
             -H "Authorization: Token $PINGHOOK_USER_TOKEN" \\
             -d '{"from": "#{recipient.username}", "message": "your reply"}'
         CURL
 
         block_command = <<~CURL.strip
-          curl -X POST https://pinghook.onrender.com/api/v1/users/@#{recipient.username}/blocks \\
+          curl -X POST https://pinghook.onrender.com/@#{recipient.username}/blocks \\
             -H "Content-Type: application/json" \\
             -H "Authorization: Token $PINGHOOK_USER_TOKEN" \\
             -d '{"block": "#{sender.username}"}'
