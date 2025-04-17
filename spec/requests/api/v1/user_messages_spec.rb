@@ -12,11 +12,11 @@ RSpec.describe "UserMessages API", type: :request do
     allow(Net::HTTP).to receive(:post).and_return(double(code: '200'))
   end
 
-  describe 'POST /api/v1/users/@#{recipient.username}/messages' do
+  describe 'POST /@#{recipient.username}' do
     let(:headers) { { 'Authorization' => "Token #{token}" } }
 
     it 'sends a message successfully to recipient and self' do
-      post "/api/v1/users/@#{recipient.username}/messages",
+      post "/@#{recipient.username}",
         params: { from: sender.username, message: 'hello' },
         headers: headers
 
@@ -41,7 +41,7 @@ RSpec.describe "UserMessages API", type: :request do
     end
 
     it "returns 400 Bad Request when sending message to self" do
-      post "/api/v1/users/@#{sender.username}/messages",
+      post "/@#{sender.username}",
         headers: {
           "Authorization" => "Token #{token}"
         },
@@ -57,7 +57,7 @@ RSpec.describe "UserMessages API", type: :request do
     end
 
     it 'returns 404 if recipient does not exist' do
-      post "/api/v1/users/@ghost/messages",
+      post "/@ghost",
         params: { from: sender.username, message: 'hi' },
         headers: headers
 
@@ -65,7 +65,7 @@ RSpec.describe "UserMessages API", type: :request do
     end
 
     it 'returns 404 if token is invalid' do
-      post "/api/v1/users/@#{recipient.username}/messages",
+      post "/@#{recipient.username}",
         params: { from: sender.username, message: 'hi' },
         headers: { 'Authorization' => 'Token invalid' }
 
@@ -75,7 +75,7 @@ RSpec.describe "UserMessages API", type: :request do
     it 'skips delivery if recipient has blocked sender' do
       recipient.blocked_users << sender
 
-      post "/api/v1/users/@#{recipient.username}/messages",
+      post "/@#{recipient.username}",
         params: { from: sender.username, message: 'yo' },
         headers: headers
 
@@ -110,7 +110,7 @@ RSpec.describe "UserMessages API", type: :request do
       allow_any_instance_of(Object).to receive(:sleep) # テスト時間を短縮するため、sleepを無効化
 
       expect {
-        post "/api/v1/users/@#{recipient.username}/messages",
+        post "/@#{recipient.username}",
           params: { from: sender.username, message: 'retry me' },
           headers: headers
       }.not_to raise_error
@@ -120,7 +120,7 @@ RSpec.describe "UserMessages API", type: :request do
 
     it 'updates sender last_sent_at' do
       freeze_time do
-        post "/api/v1/users/@#{recipient.username}/messages",
+        post "/@#{recipient.username}",
           params: { from: sender.username, message: 'yo' },
           headers: headers
 
@@ -138,7 +138,7 @@ RSpec.describe "UserMessages API", type: :request do
     it 'uses correct payload format for Slack-like webhook' do
       recipient.update!(webhook_url: 'https://hooks.slack.com/services/abc123')
 
-      post "/api/v1/users/@#{recipient.username}/messages",
+      post "/@#{recipient.username}",
         params: { from: sender.username, message: 'format check' },
         headers: headers
 
@@ -152,7 +152,7 @@ RSpec.describe "UserMessages API", type: :request do
     it 'uses correct payload format for Discord webhook' do
       recipient.update!(webhook_url: 'https://discord.com/api/webhooks/abc123')
 
-      post "/api/v1/users/@#{recipient.username}/messages",
+      post "/@#{recipient.username}",
         params: { from: sender.username, message: 'format check' },
         headers: headers
 
@@ -168,7 +168,7 @@ RSpec.describe "UserMessages API", type: :request do
     let(:headers) { { 'Authorization' => "Token #{sender.raw_token}" } }
 
     it 'returns 400 if from is missing' do
-      post "/api/v1/users/@#{recipient.username}/messages",
+      post "/@#{recipient.username}",
         params: { message: 'yo' },
         headers: headers
 
@@ -176,7 +176,7 @@ RSpec.describe "UserMessages API", type: :request do
     end
 
     it 'returns 400 if message is missing' do
-      post "/api/v1/users/@#{recipient.username}/messages",
+      post "/@#{recipient.username}",
         params: { from: sender.username, to: recipient.username },
         headers: headers
 
