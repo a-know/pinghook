@@ -19,4 +19,5 @@ Rails.application.routes.draw do
   delete '/@:username', to: 'users#destroy'
   post '/@:username', to: 'user_messages#create'
   post '/@:username/blocks', to: 'blocks#create'
+  patch '/@:username', to: 'users#update_webhook'
 end

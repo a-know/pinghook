@@ -17,6 +17,26 @@ class UsersController < ApplicationController
     end
   end
 
+  def update_webhook
+    user = User.find_by(username: params[:username])
+
+    unless user&.authenticate_token(token_from_header)
+      return head :not_found
+    end
+
+    new_url = params[:webhook_url]
+    unless new_url.present? && URI.parse(new_url).is_a?(URI::HTTP)
+      return render json: { error: 'Invalid or missing webhook_url' }, status: :bad_request
+    end
+
+    user.update!(webhook_url: new_url)
+
+    render json: {
+      status: 'updated',
+      webhook_url: user.webhook_url
+    }, status: :ok
+  end
+
   def destroy
     user = User.find_by(username: params[:username])
 
