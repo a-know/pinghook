@@ -38,7 +38,7 @@
     <li>Register your PingHook user:</li>
   </ol>
 
-  <code>curl -X POST https://pinghook.onrender.com/api/v1/users \
+  <code>curl -X POST https://pinghook.onrender.com/users \
   -H "Content-Type: application/json" \
   -d '{"username":"your-name","webhook_url":"https://discord.com/api/webhooks/xxx"}'
   </code>
@@ -47,7 +47,7 @@
     <li>Send a message to another PingHook user:</li>
   </ol>
 
-  <code>curl -X POST https://pinghook.onrender.com/api/v1/users/@{recipient-name}/messages \
+  <code>curl -X POST https://pinghook.onrender.com/@{recipient-name} \
   -H "Content-Type: application/json" \
   -H "Authorization: Token {your-token}" \
   -d '{"from": "{your-name}", "message": "Yo"}'
@@ -61,7 +61,7 @@
 
   <h2>## PingHook API Descriptions</h2>
 
-  <h3>### POST /api/v1/users</h3>
+  <h3>### POST /users</h3>
 
   <code>Create a new user
 Request body:
@@ -76,14 +76,14 @@ Response:
   "webhook_url": "..."
 }</code>
 
-<h3>### DELETE /api/v1/users/@:username</h3>
+<h3>### DELETE /@:username</h3>
 
   <code>Delete (deactivate) the specified user
 Headers:
 Authorization: Token {your-token}
 Response: 204 No Content or notification JSON via webhook</code>
 
-<h3>### POST /api/v1/users/@:username/messages</h3>
+<h3>### POST /@:username</h3>
 
   <code>Send a message to the specified user
 Headers:
@@ -100,7 +100,7 @@ Response:
   "message_preview": "your message"
 }</code>
 
-<h3>### POST /api/v1/users/@:username/blocks</h3>
+<h3>### POST /@:username/blocks</h3>
 
   <code>Block a specific user
 Headers:
