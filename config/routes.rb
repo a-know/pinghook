@@ -12,13 +12,11 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-
-      post '/users/@:username/blocks', to: 'blocks#create'
-
-      post '/users/@:username/messages', to: 'user_messages#create'
+      
     end
   end
   post '/users', to: 'users#create'
   delete '/@:username', to: 'users#destroy'
   post '/@:username', to: 'user_messages#create'
+  post '/@:username/blocks', to: 'blocks#create'
 end
