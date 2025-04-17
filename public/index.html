@@ -115,6 +115,20 @@ Response:
   "user": "username-to-block"
 }</code>
 
+<h3>### PATCH /@:username</h3>
+<code>Update your webhook URL
+  Headers:
+  Authorization: Token $PINGHOOK_USER_TOKEN
+  Request body:
+  {
+    "webhook_url": "https://hooks.slack.com/..."
+  }
+  Response:
+  {
+    "status": "updated",
+    "webhook_url": "..."
+  }</code>
+
 <footer>
     <p>&copy; 2025 a-know</p> <p><a href="https://github.com/a-know/pinghook" target="_blank">View on GitHub</a></p>
 </footer>
