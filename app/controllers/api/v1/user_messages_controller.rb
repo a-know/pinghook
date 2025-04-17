@@ -3,14 +3,6 @@ require 'net/http'
 module Api
   module V1
     class UserMessagesController < ApplicationController
-
-      def create_short
-        # `params[:username]` はルーティングから取得
-        # 他は通常の `create` と同じ処理でOK
-        params[:to] = params[:username]
-        create
-      end
-
       def create
         return head :bad_request unless params[:from].present? && params[:message].present?
 
